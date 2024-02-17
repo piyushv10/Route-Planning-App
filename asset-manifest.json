@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Route-Planning-App/static/css/main.fc11413e.css",
+    "main.js": "/Route-Planning-App/static/js/main.9fe2f538.js",
+    "static/js/592.bc008932.chunk.js": "/Route-Planning-App/static/js/592.bc008932.chunk.js",
+    "index.html": "/Route-Planning-App/index.html",
+    "main.fc11413e.css.map": "/Route-Planning-App/static/css/main.fc11413e.css.map",
+    "main.9fe2f538.js.map": "/Route-Planning-App/static/js/main.9fe2f538.js.map",
+    "592.bc008932.chunk.js.map": "/Route-Planning-App/static/js/592.bc008932.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.fc11413e.css",
+    "static/js/main.9fe2f538.js"
+  ]
+}
