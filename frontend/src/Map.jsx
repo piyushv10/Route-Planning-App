@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
-function Map({ addresses, optimizedRoute, technicianLocation, showRoute, completedJobs, apikey, onCompleteJob }) {
+function Map({ addresses, optimizedRoute, technicianLocation, showRoute, completedJobs, apikey, onCompleteJob}) {
   const [map, setMap] = useState(null);
   const [technicianMarker, setTechnicianMarker] = useState(null);
 
   useEffect(() => {
     if (showRoute && optimizedRoute.length > 0 && map) {
+      
       // Define an array to store the coordinates of the optimized route
       const routeCoordinates = optimizedRoute.map(point => ({ lat: point.lat, lng: point.lng }));
-
+      
       // Create a polyline to represent the route
       const routePolyline = new window.google.maps.Polyline({
         path: routeCoordinates,
@@ -20,8 +21,9 @@ function Map({ addresses, optimizedRoute, technicianLocation, showRoute, complet
 
       // Set the map for the polyline
       routePolyline.setMap(map);
+
     }
-  }, [showRoute, optimizedRoute, map]);
+  }, [showRoute, optimizedRoute, map,technicianLocation]);
 
   useEffect(() => {
     if (map && addresses.length > 0) {
@@ -39,8 +41,6 @@ function Map({ addresses, optimizedRoute, technicianLocation, showRoute, complet
             });
             bounds.extend(results[0].geometry.location);
             map.fitBounds(bounds);
-          } else {
-            console.error('Geocode was not successful for the following reason:', status);
           }
         });
       });
@@ -62,9 +62,7 @@ function Map({ addresses, optimizedRoute, technicianLocation, showRoute, complet
           });
           // Set the map for the technician marker
           setTechnicianMarker(marker);
-        } else {
-          console.error('Geocode was not successful for the following reason:', status);
-        }
+        } 
       });
     }
   }, [map, technicianLocation]);

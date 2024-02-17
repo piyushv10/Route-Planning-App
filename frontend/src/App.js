@@ -25,6 +25,25 @@ function App() {
     try {
       const coordinates = []; // Array to store extracted coordinates
 
+      if (technicianLocation.trim() !== "") {
+        // Geocode the technician's location to get its coordinates
+        const technicianResponse = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json`,
+          {
+            params: {
+              address: technicianLocation,
+              key: apikey,
+            },
+          }
+        );
+
+        const technicianResults = technicianResponse.data.results;
+        if (technicianResults && technicianResults.length > 0) {
+          const { lat, lng } = technicianResults[0].geometry.location;
+          coordinates.push({ lat, lng }); // Push technician's coordinates to the array
+        }
+      }
+
       // Iterate over each address in the addresses array
       for (const address of addresses) {
         // Geocode the address to get its coordinates
@@ -46,15 +65,15 @@ function App() {
       }
 
       const response = await axios.post(`${baseURL}/calculateRoute`, {
-        addresses: coordinates, // Send extracted coordinates instead of addresses
+        addresses: coordinates,
+        // technicianLocation: coordinates[0],
       });
 
       const calculatedRoute = response.data.optimizedRoute;
-      console.log("optimized route ", calculatedRoute);
+
       setOptimizedRoute(calculatedRoute);
-      console.log(calculatedRoute);
+
       setShowRoute(true); // Show the route on the map
-      console.log("route created");
     } catch (error) {
       console.error("Error planning route:", error);
     }
@@ -79,30 +98,7 @@ function App() {
     setTechnicianLocation(e.target.value);
   };
 
-  const handleTechnicianLocation = async () => {
-    try {
-      // Geocode the technician's location to get its coordinates
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json`,
-        {
-          params: {
-            address: technicianLocation,
-            key: apikey,
-          },
-        }
-      );
-
-      const { results } = response.data;
-      if (results && results.length > 0) {
-        const { lat, lng } = results[0].geometry.location;
-        // Update the technician's location
-        setTechnicianLocation(`${lat},${lng}`);
-        setTechnicianLocation("");
-      }
-    } catch (error) {
-      console.error("Error setting technician location:", error);
-    }
-  };
+  const handleTechnicianLocation = () => {};
 
   return (
     <div className="App">
@@ -139,10 +135,18 @@ function App() {
         />
       )}
       <div>
-        <button onClick={handlePlanRoute}>
-          Plan Route
-        </button>
+        <button onClick={handlePlanRoute}>Plan Route</button>
       </div>
+      {/* Render job completion buttons */}
+      {addresses.map((address, index) => (
+        <div key={index}>
+          {!completedJobs.includes(index) && (
+            <button onClick={() => handleJobCompletion(index)}>
+              {address} - Mark as Completed?
+            </button>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

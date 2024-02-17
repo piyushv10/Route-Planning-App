@@ -1,5 +1,6 @@
 const express = require("express");
-
+const axios = require("axios");
+const apikey = "AIzaSyDvUk6R0oR6GN0CE3q-mNTkIbv4t9GUCP4";
 const {
   getAllJobLocations,
   insertJobLocation,
@@ -32,8 +33,7 @@ router.post("/addJobLocation", (req, res) => {
   });
 });
 
-router.post("/calculateRoute", (req, res) => {
-  console.log("calculating...");
+router.post("/calculateRoute", async (req, res) => {
   const { addresses } = req.body;
 
   if (!Array.isArray(addresses) || addresses.length < 2) {
@@ -49,14 +49,12 @@ router.post("/calculateRoute", (req, res) => {
   };
 
   const findNearestNeighbor = (currentPoint, remainingPoints) => {
-    
     if (remainingPoints.length === 0) return [];
 
     // Find the nearest neighbor among the remaining points
     let nearestIndex = -1;
     let nearestDistance = Number.MAX_VALUE;
     for (let i = 0; i < remainingPoints.length; i++) {
-      console.log(currentPoint, remainingPoints);
       const distance = calculateDistance(currentPoint, remainingPoints[i]);
       if (distance < nearestDistance) {
         nearestIndex = i;
@@ -74,20 +72,18 @@ router.post("/calculateRoute", (req, res) => {
     return [nearestPoint, ...nextRoute];
   };
 
-  // Start with the first address as the current point
+  // Start with the first address as the current point i.e Technician's Location
   const currentPoint = addresses[0];
 
   // Clone the addresses array to avoid modifying the original array
   const remainingPoints = [...addresses.slice(1)];
 
-  // Find the optimized route using the nearest neighbor algorithm
-  const optimizedRoute = [
+
+   // Find the optimized route using the nearest neighbor algorithm
+   const optimizedRoute = [
     currentPoint,
     ...findNearestNeighbor(currentPoint, remainingPoints),
   ];
-  
-  console.log("Calculated optimizedRoute:", optimizedRoute);
-  // Return the optimized route in the response
 
   res.json({ optimizedRoute });
 });
