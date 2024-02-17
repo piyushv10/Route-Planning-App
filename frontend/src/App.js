@@ -114,6 +114,9 @@ function App() {
         jobId: index,
       });
 
+      // const updatedAddresses = addresses.filter((_, i) => i !== index);
+      // setAddresses(updatedAddresses);
+
       // await fetch(baseURL + "/markJobCompleted", {
       //   method: "POST",
       //   headers: {
@@ -124,6 +127,7 @@ function App() {
 
       // Update the list of completed jobs
       setCompletedJobs([...completedJobs, index]);
+      // await handlePlanRoute();
     } catch (error) {
       console.error("Error marking job as completed:", error);
     }
