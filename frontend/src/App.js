@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Map from "./Map";
 
@@ -12,14 +12,52 @@ function App() {
   const [showRoute, setShowRoute] = useState(false);
   const [optimizedRoute, setOptimizedRoute] = useState([]);
   const [completedJobs, setCompletedJobs] = useState([]);
+  const [jobLocations, setJobLocations] = useState([]);
   const apikey = "AIzaSyDvUk6R0oR6GN0CE3q-mNTkIbv4t9GUCP4";
 
-  const handleAddAddress = () => {
-    if (inputAddress.trim() !== "") {
-      setAddresses([...addresses, inputAddress]);
-      setInputAddress("");
+  // useEffect(() => {
+  //   // Fetch job locations when the component mounts
+  //   fetchJobLocations();
+  // }, []);
+
+  const fetchJobLocations = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/jobLocations`);
+      console.log(response.data.jobLocations);
+      setJobLocations(response.data.jobLocations);
+    } catch (error) {
+      console.error("Error fetching job locations:", error);
     }
   };
+
+  const handleAddAddress = async () => {
+    if (inputAddress.trim() !== "") {
+      try {
+        // Send a POST request to the /addJobLocation endpoint
+        const response = await axios.post(`${baseURL}/addJobLocation`, {
+          address: inputAddress,
+        });
+
+        // Extract the jobId from the response data
+        const jobId = response.data.jobId;
+
+        // Update the addresses state with the new address
+        setAddresses([...addresses, inputAddress]);
+
+        // Clear the input field
+        setInputAddress("");
+      } catch (error) {
+        console.error("Error adding job location:", error);
+      }
+    }
+  };
+
+  // const handleAddAddress = () => {
+  //   if (inputAddress.trim() !== "") {
+  //     setAddresses([...addresses, inputAddress]);
+  //     setInputAddress("");
+  //   }
+  // };
 
   const handlePlanRoute = async () => {
     try {
@@ -66,7 +104,6 @@ function App() {
 
       const response = await axios.post(`${baseURL}/calculateRoute`, {
         addresses: coordinates,
-        // technicianLocation: coordinates[0],
       });
 
       const calculatedRoute = response.data.optimizedRoute;
@@ -79,16 +116,23 @@ function App() {
     }
   };
 
-  const handleJobCompletion = async (index) => {
+  const handleJobCompletion = async (index, address) => {
     try {
-      await fetch(baseURL + "/markJobCompleted", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ jobId: index }),
+      const response = await axios.post(`${baseURL}/markJobCompleted`, {
+        jobId: index,
       });
+
+      // await fetch(baseURL + "/markJobCompleted", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ jobId: index }),
+      // });
+
+      // Update the list of completed jobs
       setCompletedJobs([...completedJobs, index]);
+      
     } catch (error) {
       console.error("Error marking job as completed:", error);
     }
@@ -107,7 +151,7 @@ function App() {
           type="text"
           value={inputAddress}
           onChange={(e) => setInputAddress(e.target.value)}
-          placeholder="Enter address"
+          placeholder="Enter Address"
         />
 
         <button onClick={handleAddAddress}>Add Address</button>
@@ -117,7 +161,7 @@ function App() {
           type="text"
           value={technicianLocation}
           onChange={handleTechnicianLocationChange}
-          placeholder="Enter technician's location"
+          placeholder="Enter Technician's Location"
         />
         <button onClick={handleTechnicianLocation}>
           Add Technician's Location
@@ -141,7 +185,7 @@ function App() {
       {addresses.map((address, index) => (
         <div key={index}>
           {!completedJobs.includes(index) && (
-            <button onClick={() => handleJobCompletion(index)}>
+            <button onClick={() => handleJobCompletion(index, address)}>
               {address} - Mark as Completed?
             </button>
           )}

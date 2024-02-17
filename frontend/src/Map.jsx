@@ -15,8 +15,8 @@ function Map({ addresses, optimizedRoute, technicianLocation, showRoute, complet
         path: routeCoordinates,
         geodesic: true,
         strokeColor: '#FF0000', // Set the color of the route line
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
+        strokeOpacity: 2.0,
+        strokeWeight: 4,
       });
 
       // Set the map for the polyline
@@ -105,7 +105,7 @@ function Map({ addresses, optimizedRoute, technicianLocation, showRoute, complet
     }
   }, [map, apikey]);
 
-  return <div id="map" style={{ width: '100%', height: '400px' }} />;
+  return <div id="map" style={{ width: '70%', height: '400px' }} />;
 }
 
 export default Map;

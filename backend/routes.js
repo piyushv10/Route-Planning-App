@@ -78,9 +78,8 @@ router.post("/calculateRoute", async (req, res) => {
   // Clone the addresses array to avoid modifying the original array
   const remainingPoints = [...addresses.slice(1)];
 
-
-   // Find the optimized route using the nearest neighbor algorithm
-   const optimizedRoute = [
+  // Find the optimized route using the nearest neighbor algorithm
+  const optimizedRoute = [
     currentPoint,
     ...findNearestNeighbor(currentPoint, remainingPoints),
   ];
@@ -88,16 +87,27 @@ router.post("/calculateRoute", async (req, res) => {
   res.json({ optimizedRoute });
 });
 
-router.post("/markJobCompleted", (req, res) => {
-  // Route logic for marking a job as completed
-  const { jobId } = req.body;
-  markJobCompleted(jobId, (err) => {
-    if (err) {
-      res.status(500).json({ error: "Internal server error" });
-    } else {
-      res.json({ success: true });
-    }
-  });
+router.post("/markJobCompleted", async (req, res) => {
+  try {
+    // Extract jobId from the request body
+    const { jobId } = req.body;
+
+    // Call the markJobCompleted function with the jobId
+    markJobCompleted(jobId, (err) => {
+      if (err) {
+        // If there's an error, send a 500 Internal Server Error response
+        console.error("Error marking job as completed:", err);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        // If successful, send a success response
+        res.json({ success: true });
+      }
+    });
+  } catch (error) {
+    // If there's an unhandled exception, send a 500 Internal Server Error response
+    console.error("Error marking job as completed:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 module.exports = router;
