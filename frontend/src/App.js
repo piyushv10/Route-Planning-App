@@ -52,13 +52,6 @@ function App() {
     }
   };
 
-  // const handleAddAddress = () => {
-  //   if (inputAddress.trim() !== "") {
-  //     setAddresses([...addresses, inputAddress]);
-  //     setInputAddress("");
-  //   }
-  // };
-
   const handlePlanRoute = async () => {
     try {
       const coordinates = []; // Array to store extracted coordinates
@@ -105,7 +98,6 @@ function App() {
       const response = await axios.post(`${baseURL}/calculateRoute`, {
         addresses: coordinates,
       });
-
       const calculatedRoute = response.data.optimizedRoute;
 
       setOptimizedRoute(calculatedRoute);
@@ -116,7 +108,7 @@ function App() {
     }
   };
 
-  const handleJobCompletion = async (index, address) => {
+  const handleJobCompletion = async (index) => {
     try {
       const response = await axios.post(`${baseURL}/markJobCompleted`, {
         jobId: index,
@@ -132,7 +124,6 @@ function App() {
 
       // Update the list of completed jobs
       setCompletedJobs([...completedJobs, index]);
-      
     } catch (error) {
       console.error("Error marking job as completed:", error);
     }
@@ -185,7 +176,7 @@ function App() {
       {addresses.map((address, index) => (
         <div key={index}>
           {!completedJobs.includes(index) && (
-            <button onClick={() => handleJobCompletion(index, address)}>
+            <button onClick={() => handleJobCompletion(index)}>
               {address} - Mark as Completed?
             </button>
           )}
